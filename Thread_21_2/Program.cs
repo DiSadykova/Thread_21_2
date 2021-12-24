@@ -12,6 +12,7 @@ namespace Thread_21_2
         static int a = 10;
         static int b = 10;
         static int[,] gardenPlan = new int[a, b];
+        static object locker = new object();
 
         static void Gardener1()
         {
@@ -19,9 +20,10 @@ namespace Thread_21_2
             {
                 for (int g = 0; g < b; g++)
                 {
-                    if(gardenPlan[i,g]!=2)
+                    if (gardenPlan[i, g] != 2)
                     {
-                    gardenPlan[i, g] = 1;
+                        gardenPlan[i, g] = 1;
+                        Thread.Sleep(5);
                     }
                     else
                     {
@@ -32,20 +34,25 @@ namespace Thread_21_2
         }
         static void Gardener2()
         {
-            for (int i = a-1; i >= 0; i--)
+            lock (locker)
             {
-                for (int g = b-1; g >= 0; g--)
+                for (int i = a - 1; i >= 0; i--)
                 {
-                    if (gardenPlan[g, i] !=1)
+                    for (int g = b - 1; g >= 0; g--)
                     {
-                        gardenPlan[g, i] = 2;
-                    }
-                    else
-                    {
-                        break;
+                        if (gardenPlan[g, i] != 1)
+                        {
+                            gardenPlan[g, i] = 2;
+                            Thread.Sleep(5);
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
                 }
             }
+            
         }
         static void Main(string[] args)
         {
@@ -57,12 +64,13 @@ namespace Thread_21_2
             {
                 for (int j = 0; j < b; j++)
                 {
-                    Console.Write("{0,3} ", gardenPlan[i,j]);
+                    Console.Write("{0,3} ", gardenPlan[i, j]);
                 }
                 Console.WriteLine();
             }
+
             Console.ReadKey();
         }
-       
+
     }
 }
